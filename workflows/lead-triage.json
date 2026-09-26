@@ -1,0 +1,45 @@
+{
+  "name": "lead-triage",
+  "steps": [
+    {
+      "name": "segment",
+      "type": "classify",
+      "field": "message",
+      "rules": [
+        {
+          "contains": [
+            "срочно",
+            "сегодня",
+            "быстро"
+          ],
+          "label": "hot"
+        },
+        {
+          "contains": [
+            "цена",
+            "стоимость",
+            "бюджет"
+          ],
+          "label": "pricing"
+        }
+      ],
+      "default": "general"
+    },
+    {
+      "name": "prompt",
+      "type": "template",
+      "template": "Клиент: {{name}}. Сообщение: {{message}}. Сегмент: {{segment}}. Сформируй короткий ответ."
+    },
+    {
+      "name": "draft",
+      "type": "llm",
+      "prompt": "{{prompt}}",
+      "retries": 2
+    },
+    {
+      "name": "final",
+      "type": "output",
+      "template": "Сегмент: {{segment}}\nЧерновик: {{draft}}"
+    }
+  ]
+}
